@@ -13,8 +13,6 @@ def get_character_movies_from_api(character)
     end
 end
 
-# get_character_movies_from_api('R2-D2')
-
 def print_movies(films_hash)
   films_hash.each do |each_array|
     response_string = RestClient.get(each_array)
