@@ -2,19 +2,15 @@ require 'rest-client'
 require 'json'
 require 'pry'
 
-puts 'this is a test'
 
 def get_character_movies_from_api(character)
   #make the web request
-  array = []
+  
   response_string = RestClient.get('http://www.swapi.co/api/people/')
   response_hash = JSON.parse(response_string)
     response_hash['results'].each do |character_data|
-      if character_data['name'].downcase == character
-        array.push(character_data['films'])
-      end
+      return character_data['name'].downcase == character ? character_data['films'] : nil
     end
-    array.flatten
 end
 
 # get_character_movies_from_api('R2-D2')
