@@ -1,16 +1,9 @@
 require 'rest-client'
 require 'json'
 require 'pry'
-
-def get_character_movies_from_api(character)
-  #make the web request
-  response_string = RestClient.get('http://www.swapi.co/api/people/')
-  response_hash = JSON.parse(response_string)
-  
-  # NOTE: in this demonstration we name many of the variables _hash or _array. 
+#make the web request
+  # note: in this demonstration we name many of the variables _hash or _array.
   # This is done for educational purposes. This is not typically done in code.
-
-
   # iterate over the response hash to find the collection of `films` for the given
   #   `character`
   # collect those film API urls, make a web request to each URL to get the info
@@ -20,9 +13,41 @@ def get_character_movies_from_api(character)
   # this collection will be the argument given to `parse_character_movies`
   #  and that method will do some nice presentation stuff: puts out a list
   #  of movies by title. play around with puts out other info about a given film.
+
+def get_api_results
+  response_string = RestClient.get('http://www.swapi.co/api/people/')
+  JSON.parse(response_string)
+end
+
+def character_check(response_hash, character)
+  character_films = []
+  response_hash["results"].each { |result|
+    if result["name"].downcase == character
+      character_films = result["films"]
+    end
+    }
+  character_films
+end
+
+def get_film_info(films)
+  film_info = []
+  films.each { |film_url|
+    film_hash = RestClient.get(film_url)
+    film_info << JSON.parse(film_hash)
+  }
+  film_info
+end
+
+def get_character_movies_from_api(character)
+  response_hash = get_api_results
+  films = character_check(response_hash, character)
+  get_film_info(films)
 end
 
 def print_movies(films_hash)
+  films_hash.each_with_index {|film, idx|
+    puts films_hash[idx]["title"]
+  }
   # some iteration magic and puts out the movies in a nice list
 end
 
@@ -31,7 +56,8 @@ def show_character_movies(character)
   print_movies(films_array)
 end
 
-## BONUS
+
+# BONUS
 
 # that `get_character_movies_from_api` method is probably pretty long. Does it do more than one job?
 # can you split it up into helper methods?
